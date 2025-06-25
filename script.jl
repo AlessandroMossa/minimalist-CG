@@ -10,7 +10,6 @@ using Printf
 ##################################
 
 struct Conf
-    reference_structure::String
     box_margin::Float32
     trans_peptide_bond::Vector{Float32}
     cis_peptide_bond::Vector{Float32}
@@ -272,16 +271,15 @@ function kθ(θ)
 end
 
 function prepareConfiguration()
-    reference_structure = "md_0.gro"
     box_margin =          10.0f0          #Å
     trans_peptide_bond = [98.5f0, 3.80f0] #Å, kcal/mol
     cis_peptide_bond =   [70.0f0, 2.88f0] #Å, kcal/mol
-    return Conf(reference_structure,box_margin,trans_peptide_bond,cis_peptide_bond)
+    return Conf(box_margin,trans_peptide_bond,cis_peptide_bond)
 end
 
-function createCGmodel(outputFile::String)
+function createCGmodel(inputFile::String,outputFile::String)
     conf = prepareConfiguration()
-    resLst = findCA(conf.reference_structure)
+    resLst = findCA(inputFile)
     nrBeads = length(resLst)
     simulBox = fixSimulBox(resLst; box_margin=conf.box_margin)
     atmTypes = fixAtomTypes(resLst)
