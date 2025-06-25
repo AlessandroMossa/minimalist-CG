@@ -5,8 +5,4 @@ The minimalist coarse-grained (CG) model for protein dynamics that I have in min
 
 ## Minimalist Tutorial
 
-Let's say we want to build a minimalist CG model of a "regular" protein (i.e., not significantly disordered, no exotic atoms). Let's extract from an atomistic simulation a representative snapshot (here is the file `md_0.gro`, which contains a frame from an all-atom simulation of the protein ACE2 ([PDB:1R42](https://www.rcsb.org/structure/1R42))). If we have Julia already installed (if not, follow the instructions [here](https://julialang.org/install/)), that takes no time at all: from your terminal of choice, turn on the REPL console and simultaneously load the script with the command `julia script.jl` and, inside the REPL, run the command `createCGmodel("md_0.gro","data.txt")`. You should see a freshly produced file `data.txt` that is ready to be used to launch a CG simulation with LAMMPS. If you're done with Julia, close the REPL with the command `exit()`. That's it!
-
-
-
-
+Let's say we want to build a minimalist CG model of a "regular" protein (i.e., not significantly disordered, no exotic atoms). Let's extract from an atomistic simulation a representative snapshot (here is the file `md_0.gro`, which contains a frame from an all-atom simulation of the protein ACE2 ([PDB:1R42](https://www.rcsb.org/structure/1R42))). If we have Julia already installed (if not, follow the instructions [here](https://julialang.org/install/)), that takes no time at all: from your terminal of choice, turn on the REPL console and simultaneously load the script with the command `julia script.jl` and, inside the REPL, run the command `createCGmodel("md_0.gro","data.txt")`. You should see a freshly produced file `data.txt` that is ready to be used to launch a CG simulation with LAMMPS. If you're done with Julia, close the REPL with the command `exit()`. The input file for LAMMPS should look like the file `in_lammps.txt`. That's it!
