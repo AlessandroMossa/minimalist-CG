@@ -272,7 +272,7 @@ function kθ(θ)
 end
 
 function prepareConfiguration()
-    reference_structure = "/Users/ale/Research/PACECOR/AA/ace2/ace2_03/run00/md_0.gro"
+    reference_structure = "md_0.gro"
     box_margin =          10.0f0          #Å
     trans_peptide_bond = [98.5f0, 3.80f0] #Å, kcal/mol
     cis_peptide_bond =   [70.0f0, 2.88f0] #Å, kcal/mol
