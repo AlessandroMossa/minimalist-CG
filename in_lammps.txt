@@ -1,0 +1,16 @@
+# ACE2 CG simulation
+
+units		real
+boundary	p p p
+atom_style	molecular
+
+bond_style	hybrid harmonic morse
+angle_style	cosine/squared
+dihedral style	fourier
+pair_style	morse/smooth/linear 20.0
+
+read_data	data.txt
+
+pair_coeff	* * 0.05 0.70 9.5
+
+neighbor	2.0 bin
