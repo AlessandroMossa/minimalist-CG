@@ -5,4 +5,4 @@ The minimalist coarse-grained (CG) model for protein dynamics that I have in min
 
 ## Minimalist Tutorial
 
-Let's say we want to build a minimalist CG model of a "regular" protein (i.e., not significantly disordered, no exotic atoms). Let's extract from an atomistic simulation a representative snapshot (here is the file `frame_0.gro`)
+Let's say we want to build a minimalist CG model of a "regular" protein (i.e., not significantly disordered, no exotic atoms). Let's extract from an atomistic simulation a representative snapshot (here is the file `md_0.gro`, which contains a frame from an atomistic simulation of the protein ACE2 ([PDB:1R42](https://www.rcsb.org/structure/1R42))). If we have Julia already installed (if not, follow the instructions [here](https://julialang.org/install/)), that takes no time at all: turn on the REPL
