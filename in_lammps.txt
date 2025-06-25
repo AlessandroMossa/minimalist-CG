@@ -14,3 +14,52 @@ read_data	data.txt
 pair_coeff	* * 0.05 0.70 9.5
 
 neighbor	2.0 bin
+
+###########################################
+# DEFINE GROUPS
+
+###########################################
+# DEFINE COMPUTES
+
+###########################################
+# MINIMIZATION
+
+min_style	cg
+minimize	1.0e-4 1.0e-6 1000 1000
+
+###########################################
+# EQUILIBRATION
+# Langevin dynamics at 300 K
+
+velocity	all create 300.0 22108559
+velocity	all zero linear
+fix 1 		all nve/limit 0.1
+fix 2		all langevin 300.0 300.0 10.0 46575393
+fix 3		all momentum 100 linear 1 1 1 angular
+thermo_style	custom step temp 
+thermo		100 
+timestep	1
+run		10000
+unfix 1
+unfix 2
+unfix 3
+
+###########################################
+# PRODUCTION RUN
+# Langevin dynamics at 300 K
+
+reset_timestep	0
+timestep	4.0     #fs
+
+thermo_style	custom step etotal temp ke ebond eangle edihed evdwl 
+thermo		500000
+
+fix 1		all nve
+fix 2 		all langevin 300.0 300.0 80.0 65333745
+fix 3		all balance 5000000 1.1 shift xyz 20 1.0  
+
+balance 	1.1 shift xyz 20 1.0
+restart		5000000 restart1 restart2
+dump 1 		all custom 2500 dump.atom id mol type x y z ix iy iz 
+
+run		125000000		# 500.0 ns 
