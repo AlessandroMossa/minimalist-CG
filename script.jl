@@ -2,6 +2,8 @@ cd(@__DIR__)
 
 using Pkg
 Pkg.activate(".")
+Pkg.resolve()
+Pkg.instantiate()
 
 using Printf
 
