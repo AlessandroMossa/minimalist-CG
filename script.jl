@@ -135,7 +135,7 @@ function writeDihedralCoeffs(out::IOStream)
     for i in -180:5:175
         k = coeff_K(i+2.5)
         d = coeff_d(i+2.5)
-        @printf(out, "%5d  1  %5.1f  1  %7.1f\n", Int((i+185)/5), k, d)
+        @printf(out, "%5d  1  %5.1f  1  %7.1f %s\n", Int((i+185)/5), k, d, "# ϕ=$i°")
     end
     println(out, "")
 end
