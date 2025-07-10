@@ -17,24 +17,12 @@ struct Conf
     cis_peptide_bond::Vector{Float32}
 end
 
-struct GroLine
+struct InputLine
     resNr::Int
     resNm::String
     atmNm::String
     atmNr::Int
     pos::Tuple{Float32,Float32,Float32}
-end
-
-function GroLine(line::String)
-    resNr = parse(Int, line[1:5])
-    resNm = strip(line[6:10])
-    atmNm = strip(line[11:15])
-    atmNr = parse(Int, line[16:20])
-    # a .gro file is written in nm, but LAMMPS works in Å
-    x = parse(Float32, line[21:28])*10
-    y = parse(Float32, line[29:36])*10
-    z = parse(Float32, line[37:44])*10
-    return GroLine(resNr,resNm,atmNm,atmNr,(x,y,z))
 end
 
 struct Resid
@@ -63,16 +51,51 @@ dihedral(r1,r2,r3,r4) = dihedral(r2 .- r1, r3 .- r2, r4 .- r3)
 # Functions to Read & Write #
 #############################
 
-function readGroFile(fileName::String)
-    groLines = GroLine[]
+function groLine(line::String)
+    resNr = parse(Int, line[1:5])
+    resNm = strip(line[6:10])
+    atmNm = strip(line[11:15])
+    atmNr = parse(Int, line[16:20])
+    # a .gro file is written in nm, but LAMMPS works in Å
+    x = parse(Float32, line[21:28])*10
+    y = parse(Float32, line[29:36])*10
+    z = parse(Float32, line[37:44])*10
+    return InputLine(resNr,resNm,atmNm,atmNr,(x,y,z))
+end
+
+function pdbLine(line::String)
+    rewrap(str) = isdigit(str[1]) ? str[2:end]*str[1] : str
+    resNr = parse(Int, line[23:26])
+    resNm = strip(line[18:20])
+    atmNm = rewrap(strip(line[13:16]))
+    atmNr = parse(Int, line[7:11])
+    x = parse(Float32, line[31:38])
+    y = parse(Float32, line[39:46])
+    z = parse(Float32, line[47:54])
+    return InputLine(resNr,resNm,atmNm,atmNr,(x,y,z))
+end
+
+function readInputFile(fileName::String)
+    inputLines = InputLine[]
+    ext = splitext(fileName)[2]
     open(fileName, "r") do input
-        readline(input) # skip the title
-        nrAtms = parse(Int, readline(input))
-        for _ in 1:nrAtms
-            push!(groLines, GroLine(readline(input)))
+        if ext == ".gro"
+            readline(input) # skip the title
+            nrAtms = parse(Int, readline(input))
+            for _ in 1:nrAtms
+                push!(inputLines, groLine(readline(input)))
+            end
+        elseif ext == ".pdb"
+            for line in eachline(input)
+                if startswith(line,"ATOM") || startswith(line,"HETATM")
+                    push!(inputLines, pdbLine(line))
+                end
+            end
+        else
+            throw(ErrorException("unsupported input file format: "*ext))
         end
     end
-    return groLines
+    return inputLines
 end
 
 function writePreamble(out::IOStream,summary)
@@ -198,17 +221,17 @@ end
 function findCA(fileName::String)
     masses = Dict([("H",1.0080f0),("C",12.011f0),("N",14.007f0),("O",15.999f0),("S",32.06f0)])
     out = Resid[] 
-    groLines = readGroFile(fileName)
+    inputLines = readInputFile(fileName)
     res0 = -1; m0 = 0.0f0; nm0 = ""; pos0 = nothing
-    for groLine in groLines
-        if groLine.resNr != res0
+    for inputLine in inputLines
+        if inputLine.resNr != res0
             isnothing(pos0) || push!(out, Resid(nm0,res0,pos0,m0))
-            m0 = groLine.atmNm[1:1] in keys(masses) ? masses[groLine.atmNm[1:1]] : 0.0f0
-            res0 = groLine.resNr; nm0 = groLine.resNm; pos0 = nothing
+            m0 = inputLine.atmNm[1:1] in keys(masses) ? masses[inputLine.atmNm[1:1]] : 0.0f0
+            res0 = inputLine.resNr; nm0 = inputLine.resNm; pos0 = nothing
         else
-            m0 += groLine.atmNm[1:1] in keys(masses) ? masses[groLine.atmNm[1:1]] : 0.0f0
+            m0 += inputLine.atmNm[1:1] in keys(masses) ? masses[inputLine.atmNm[1:1]] : 0.0f0
         end
-        (groLine.atmNm == "CA") && (pos0 = groLine.pos)
+        (inputLine.atmNm == "CA") && (pos0 = inputLine.pos)
     end
     isnothing(pos0) || push!(out, Resid(nm0,res0,pos0,m0))
     return out
