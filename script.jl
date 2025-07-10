@@ -240,7 +240,7 @@ end
 function fixAtomTypes(residueList::Vector{Resid})
     atmTypes = Set{Tuple{String,Float32}}()
     for res in residueList
-        push!(atmTypes, (res.resNm, res.mass))
+        push!(atmTypes, (res.resNm, round(res.mass, digits =3)))
     end
     return sort(collect(atmTypes))
 end
