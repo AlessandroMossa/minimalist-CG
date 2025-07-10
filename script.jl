@@ -225,7 +225,7 @@ function findCA(fileName::String)
     res0 = -1; m0 = 0.0f0; nm0 = ""; pos0 = nothing
     for inputLine in inputLines
         if inputLine.resNr != res0
-            isnothing(pos0) || push!(out, Resid(nm0,res0,pos0,m0))
+            isnothing(pos0) || push!(out, Resid(nm0,res0,pos0,round(m0,digits=3)))
             m0 = inputLine.atmNm[1:1] in keys(masses) ? masses[inputLine.atmNm[1:1]] : 0.0f0
             res0 = inputLine.resNr; nm0 = inputLine.resNm; pos0 = nothing
         else
@@ -233,7 +233,7 @@ function findCA(fileName::String)
         end
         (inputLine.atmNm == "CA") && (pos0 = inputLine.pos)
     end
-    isnothing(pos0) || push!(out, Resid(nm0,res0,pos0,m0))
+    isnothing(pos0) || push!(out, Resid(nm0,res0,pos0,round(m0,digits=3)))
     return out
 end
 
