@@ -66,7 +66,7 @@ end
 function pdbLine(line::String)
     rewrap(str) = isdigit(str[1]) ? str[2:end]*str[1] : str
     resNr = parse(Int, line[23:26])
-    resNm = strip(line[18:20])
+    resNm = strip(line[18:21]) # note I'm allowing 4-letter residue names
     atmNm = rewrap(strip(line[13:16]))
     atmNr = parse(Int, line[7:11])
     x = parse(Float32, line[31:38])
